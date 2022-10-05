@@ -1,4 +1,4 @@
-name: update fork
+name: Sync Repo
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
       - main
   schedule:
     - cron: 15,45 0-15,23 * * *
+  workflow_dispatch:
 
 jobs:
   sync:
