@@ -1,11 +1,11 @@
 name: IF-Repair
 
 on:
-  push:
-    branches:
-      - main
-  schedule:
-    - cron: 20,50 0-15,23 * * *
+#  push:
+#    branches:
+#      - main
+#  schedule:
+#    - cron: 20,50 0-15,23 * * *
   workflow_dispatch:
 
 
