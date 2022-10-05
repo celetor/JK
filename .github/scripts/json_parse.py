@@ -1,3 +1,4 @@
+import argparse
 import re
 import json
 import os
@@ -56,24 +57,25 @@ def download(url: str):
 
 
 if __name__ == '__main__':
-    js_data = parse_json("Q2WForever.json")
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('--input', dest='input', default='', help='json file path')
+    parser.add_argument('--output', dest='output', default='', help='json file path')
+    args = parser.parse_args()
+    input_path = args.input
+    output_path = args.output
+
+    js_data = parse_json(input_path)
     for site in js_data['sites']:
         ext = site.get('ext')
-        if ext and str(ext).startswith('http'):
-            print(ext)
-            download(ext)
-            time.sleep(0.5)
-    #         print(ext)
-    #         res = requests.get(ext)
-    #         try:
-    #             r = res.content
-    #             with open('tmp.txt', 'wb') as f:
-    #                 f.write(r)
-    #             rr = parse_json('tmp.txt')
-    #             print(rr)
-    #             text = json.dumps(rr)
-    #             site['ext'] = text
-    #         except Exception as e:
-    #             print(ext, e)
-    # with open('test.txt', 'w', encoding='utf-8') as f:
-    #     json.dump(js_data, f, indent=4)
+        if ext:
+            if ext == 'https://freed.yuanhsing.cf/TVBox/MaooXB2/剧白白-蓝光.json':
+                site['ext'] = 'https://cdn.staticaly.com/gh/celetor/JK@main/source/MaooXB2/剧白白-蓝光.json'
+            elif ext == 'https://freed.yuanhsing.cf/TVBox/MaooXP/jubaibai.json':
+                site['ext'] = 'https://cdn.staticaly.com/gh/celetor/JK@main/source/MaooXP/jubaibai.json'
+        # if ext and str(ext).startswith('http'):
+        #     print(ext)
+        #     download(ext)
+        #     time.sleep(0.5)
+
+    with open(output_path, 'w', encoding='utf-8') as f:
+        json.dump(js_data, f, indent=4)

@@ -1,0 +1,81 @@
+name: IF-Repair
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: 20,50 0-15,23 * * *
+  workflow_dispatch:
+
+
+jobs:
+  auto:
+    runs-on: ubuntu-latest
+
+    env:
+      repoUrl: https://github.com/HenryQinUp/JK.git
+      branch: master
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: main
+          path: work_space
+
+      - name: Get The Last Commit
+        working-directory: work_space
+        run: |
+          commit=$(curl -sL ${{ env.repoUrl }}/commits/${{ env.branch }} |grep -o '/commit/[a-z0-9]\+' |head -1 | cut -d\/ -f3)
+          update_time=$(date -u -d '+8 hour' '+%Y.%m%d.%H%M')
+          if ! grep -q "$commit" ./log.txt; then
+            echo "commit=$commit" >> $GITHUB_ENV
+            echo "update_time=update_time" >> $GITHUB_ENV
+          fi
+
+      - name: Download File
+        if: ${{ env.commit }}
+        working-directory: work_space
+        run: curl -sL https://raw.githubusercontent.com/HenryQinUp/JK/master/Q2WForever.json > Q2WForever.json
+
+      - name: Install Dependencies
+        if: ${{ env.commit }}
+        working-directory: work_space
+        run: pip3 install -r ./.github/scripts/requirements.txt
+
+      - name: Install Dependencies
+        if: ${{ env.commit }}
+        working-directory: work_space
+        run: |
+          cd ./.github/scripts/
+          python3 json_parse.py --input=${{ github.workspace }}/work_space/Q2WForever.json --output=${{ github.workspace }}/work_space/IF.json
+
+      - name: Release App
+        uses: softprops/action-gh-release@v1
+        if: ${{ env.commit }}
+        with:
+          name: ${{ env.update_time }}
+          tag_name: ${{ env.update_time }}
+          body: ${{ env.update_time }}
+          files: work_space/IF.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete File
+        if: ${{ env.commit }}
+        working-directory: work_space
+        run: rm -f Q2WForever.json && rm -f IF.json
+
+      - name: Commit And Push
+        if: ${{ env.commit }}
+        working-directory: work_space
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@github.com"
+          git pull
+          echo "${{ env.commit }}" > ./log.txt
+          git add --all
+          git commit -m "$(date -u -d '+8 hour' '+%Y/%m/%d %H:%M:%S')"
+          git push origin master
