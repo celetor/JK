@@ -33,7 +33,7 @@ jobs:
           update_time=$(date -u -d '+8 hour' '+%Y.%m%d.%H%M')
           if ! grep -q "$commit" ./log.txt; then
             echo "commit=$commit" >> $GITHUB_ENV
-            echo "update_time=update_time" >> $GITHUB_ENV
+            echo "update_time=$update_time" >> $GITHUB_ENV
           fi
 
       - name: Download File
@@ -79,4 +79,4 @@ jobs:
           echo "${{ env.commit }}" > ./log.txt
           git add --all
           git commit -m "$(date -u -d '+8 hour' '+%Y/%m/%d %H:%M:%S')"
-          git push origin master
+          git push origin main
