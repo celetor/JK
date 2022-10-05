@@ -74,7 +74,7 @@ jobs:
         working-directory: work_space
         run: |
           git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@github.com"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git pull
           echo "${{ env.commit }}" > ./log.txt
           git add --all
