@@ -46,14 +46,14 @@ jobs:
         working-directory: work_space
         run: pip3 install -r ./.github/scripts/requirements.txt
 
-      - name: Install Dependencies
+      - name: Repair
         if: ${{ env.commit }}
         working-directory: work_space
         run: |
           cd ./.github/scripts/
           python3 json_parse.py --input=${{ github.workspace }}/work_space/Q2WForever.json --output=${{ github.workspace }}/work_space/IF.json
 
-      - name: Release App
+      - name: Release
         uses: softprops/action-gh-release@v1
         if: ${{ env.commit }}
         with:
