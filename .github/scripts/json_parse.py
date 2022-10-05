@@ -71,7 +71,7 @@ if __name__ == '__main__':
             if ext == 'https://freed.yuanhsing.cf/TVBox/MaooXB2/剧白白-蓝光.json':
                 site['ext'] = 'https://cdn.staticaly.com/gh/celetor/JK@main/source/MaooXB2/剧白白-蓝光.json'
             elif ext == 'https://freed.yuanhsing.cf/TVBox/MaooXP/jubaibai.json':
-                site['ext'] = 'https://cdn.staticaly.com/gh/celetor/JK@main/source/MaooXP/jubaibai.json'
+                site['ext'] = 'https://cdn.jsdelivr.net/gh/celetor/JK@main/source/MaooXP/jubaibai.json'
         # if ext and str(ext).startswith('http'):
         #     print(ext)
         #     download(ext)
