@@ -1,9 +1,6 @@
 name: Sync Repo
 
 on:
-  push:
-    branches:
-      - main
   schedule:
     - cron: 15,45 0-15,23 * * *
   workflow_dispatch:
