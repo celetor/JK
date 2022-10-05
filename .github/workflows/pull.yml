@@ -1,0 +1,32 @@
+name: update fork
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: 15,45 0-15,23 * * *
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      repoUrl: https://github.com/HenryQinUp/JK.git
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: master
+      - name: Set env
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+      - name: Update fork
+        run: |
+          git remote add upstream ${{ env.repoUrl }}
+          git remote -v
+          git fetch upstream
+          git checkout master
+          git merge upstream/master
+          git push origin master
