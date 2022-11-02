@@ -92,9 +92,7 @@ X-WR-CALNAME:{int(work_list[0]['month'])}月排班表"""
 
     for work in work_list:
         title = work['state']
-        if title == '☆':
-            continue
-        elif title == 'E':
+        if title == 'E':
             start_hms = '09:00:00'
             end_hms = '21:30:00'
         elif title == 'D':
@@ -107,8 +105,7 @@ X-WR-CALNAME:{int(work_list[0]['month'])}月排班表"""
             start_hms = '13:30:00'
             end_hms = '21:30:00'
         else:
-            start_hms = '00:00:00'
-            end_hms = '00:00:00'
+            continue
         year = datetime.date.today().strftime('%Y')
         date = f'{year}/{work["month"]}/{work["day"]}'
         start_time_cn = f'{date}T{start_hms}'
@@ -135,4 +132,4 @@ END:VCALENDAR'''
 
 
 if __name__ == "__main__":
-    main(r'D:/附件1：11月计划排班.xlsx', '姓名')
+    main(r'xxx.xlsx', 'yyy')
