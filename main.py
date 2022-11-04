@@ -3,6 +3,8 @@ import re
 import datetime
 
 import openpyxl
+from hashlib import md5
+from Const import *
 
 
 def is_int(s):
@@ -11,6 +13,16 @@ def is_int(s):
         return True
     except ValueError:
         return False
+
+
+def get_week(t):
+    china_time = datetime.datetime.strptime(t, '%Y/%m/%dT%H:%M:%S')
+    return china_time.strftime('%w')
+
+
+def time_cn2utc(t, fmt='%Y%m%dT%H%M%SZ'):
+    utc_time = datetime.datetime.strptime(t, '%Y/%m/%dT%H:%M:%S') - datetime.timedelta(hours=8)
+    return utc_time.strftime(fmt)
 
 
 def get_month(path):
@@ -67,55 +79,60 @@ def read_excel(path, name, sheet=None):
     if not month:
         month = get_month(sh.cell(row=1, column=1).value)
 
-    work_info = []
+    month = month if len(month) > 1 else f'0{month}'
+    year = int(datetime.date.today().strftime('%Y'))
+    if month == '01':  # 1月排版肯定是去年12月搞的
+        year += 1
+    work_info = {
+        'year': str(year),
+        'month': month,
+        'days': []
+    }
     for x in range(name_info[0] + 1, col_count):
         day = str(sh.cell(row=date_info[1], column=x).value)
         if is_int(day):
-            month = month if len(month) > 1 else f'0{month}'
             day = day if len(day) > 1 else f'0{day}'
-            work_info.append({
-                'month': month,
+            work_info['days'].append({
                 'day': day,
-                'state': sh.cell(row=name_info[1], column=x).value
+                'tag': sh.cell(row=name_info[1], column=x).value
             })
     return work_info
 
 
 def main(path, name, sheet=None):
     work_list = read_excel(path, name, sheet)
+
+    year = work_list['year']
+    month = work_list['month']
+
     ical = f"""BEGIN:VCALENDAR
 VERSION:2.0
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 PRODID:Celetor
-X-WR-CALNAME:{int(work_list[0]['month'])}月排班表"""
+X-WR-CALNAME:{year}年{int(month)}月排班表"""
 
-    for work in work_list:
-        title = work['state']
-        if title == 'E':
-            start_hms = '09:00:00'
-            end_hms = '21:30:00'
-        elif title == 'D':
-            start_hms = '09:00:00'
-            end_hms = '18:00:00'
-        elif title == 'G':
-            start_hms = '13:30:00'
-            end_hms = '18:00:00'
-        elif title == 'H':
-            start_hms = '13:30:00'
-            end_hms = '21:30:00'
+    for work in work_list['days']:
+        title = work['tag']
+        if calendar.get(title):
+            start_hms = calendar[title]['start_time']
+            end_hms = calendar[title]['end_time']
         else:
             continue
-        year = datetime.date.today().strftime('%Y')
-        date = f'{year}/{work["month"]}/{work["day"]}'
-        start_time_cn = f'{date}T{start_hms}'
-        start_time_utc = datetime.datetime.strptime(start_time_cn, '%Y/%m/%dT%H:%M:%S') - datetime.timedelta(hours=8)
-        start_time = start_time_utc.strftime('%Y%m%dT%H%M%SZ')
-        end_time_cn = f'{date}T{end_hms}'
-        end_time_utc = datetime.datetime.strptime(end_time_cn, '%Y/%m/%dT%H:%M:%S') - datetime.timedelta(hours=8)
-        end_time = end_time_utc.strftime('%Y%m%dT%H%M%SZ')
 
-        description = f'打工时间：{start_hms[:-3]}～{end_hms[:-3]}\\n注意：周五、周六或节假日22:00闭店'
+        date = f'{year}/{month}/{work["day"]}'
+        start_time_cn = f'{date}T{start_hms}'
+        start_time = time_cn2utc(start_time_cn)
+
+        week = get_week(start_time_cn)  # 星期几
+        if end_hms == '21:30:00' and (week == '5' or week == '6'):
+            end_hms = '22:00:00'
+        description = f'打工时间：{start_hms[:-3]}～{end_hms[:-3]}' + (
+            '\\n注意：节假日22:00闭店' if end_hms == '21:30:00' else '')
+
+        end_time_cn = f'{date}T{end_hms}'
+        end_time = time_cn2utc(end_time_cn)
+
         ical += f'''
 BEGIN:VEVENT
 SUMMARY:{title}班
@@ -127,9 +144,9 @@ END:VEVENT'''
 
     ical += '''
 END:VCALENDAR'''
-    with open('./s-work.ics', 'w', encoding='utf-8') as f:
+    with open(f"./{year}-{month}-{md5(name.encode()).hexdigest()}.ics", 'w', encoding='utf-8') as f:
         f.write(ical)
 
 
 if __name__ == "__main__":
-    main(r'xxx.xlsx', 'yyy')
+    main(r'd:/XX.xlsx', 'YY')
