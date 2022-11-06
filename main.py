@@ -15,6 +15,12 @@ def is_int(s):
         return False
 
 
+def mkdirs(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return path
+
+
 def get_week(t):
     china_time = datetime.datetime.strptime(t, '%Y/%m/%dT%H:%M:%S')
     return china_time.strftime('%w')
@@ -144,7 +150,7 @@ END:VEVENT'''
 
     ical += '''
 END:VCALENDAR'''
-    with open(f"./{year}-{month}-{md5(name.encode()).hexdigest()}.ics", 'w', encoding='utf-8') as f:
+    with open(f"./{mkdirs(year+month)}/{md5(name.encode()).hexdigest()}.ics", 'w', encoding='utf-8') as f:
         f.write(ical)
 
 
