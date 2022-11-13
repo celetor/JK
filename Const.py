@@ -13,7 +13,7 @@ calendar = {
     },
     "G": {
         "start_time": "13:30:00",
-        "end_time": "21:30:00"
+        "end_time": "18:00:00"
     },
     "A": {
         "start_time": "08:00:00",
