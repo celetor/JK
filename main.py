@@ -150,7 +150,7 @@ END:VEVENT'''
 
     ical += '''
 END:VCALENDAR'''
-    with open(f"./{mkdirs(year+month)}/{md5(name.encode()).hexdigest()}.ics", 'w', encoding='utf-8') as f:
+    with open(f"./{mkdirs(year + month)}/{md5(name.encode()).hexdigest()}.ics", 'w', encoding='utf-8') as f:
         f.write(ical)
 
 
