@@ -15,6 +15,10 @@ calendar = {
         "start_time": "13:30:00",
         "end_time": "18:00:00"
     },
+    "Q": {
+        "start_time": "12:00:00",
+        "end_time": "20:00:00"
+    },
     "A": {
         "start_time": "08:00:00",
         "end_time": "16:30:00"
