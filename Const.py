@@ -5,18 +5,18 @@ calendar = {
     },
     "H": {
         "start_time": "13:30:00",
-        "end_time": "21:30:00"
+        "end_time": "22:00:00"
     },
     "E": {
         "start_time": "09:00:00",
-        "end_time": "21:30:00"
+        "end_time": "22:00:00"
     },
     "G": {
         "start_time": "13:30:00",
         "end_time": "18:00:00"
     },
     "Q": {
-        "start_time": "12:00:00",
+        "start_time": "11:00:00",
         "end_time": "20:00:00"
     },
     "A": {
